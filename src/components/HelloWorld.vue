@@ -10,9 +10,8 @@ defineProps({
 <template>
   <div class="greetings">
     <h1 class="green">{{ msg }}</h1>
-    <h3>If you don't have eth, send 0 ether</h3>
     <h3>
-      Built with your favorite techs in blockchain <br />
+      Built with your favorite techs in blockchain
       <a target="_blank" href="https://vitejs.dev/">Vite</a> +
       <a target="_blank" href="https://vuejs.org/">Vue 3</a> +
       <a target="_blank" href="https://web3js.readthedocs.io/en/v1.7.1/"

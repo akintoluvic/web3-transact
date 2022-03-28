@@ -91,6 +91,9 @@ export default {
     <form>
       <label for="address">Address</label>
       <input type="text" name="address" v-model="destinationAddress" />
+      <span class="address-info"
+        >Address should be on Ropsten Test Network</span
+      >
       <label for="amount">Amount</label>
       <input type="number" name="amount" v-model="amount" />
       <button
@@ -104,4 +107,9 @@ export default {
   </main>
 </template>
 
-<style scoped></style>
+<style scoped>
+.address-info {
+  font-size: 0.8rem;
+  color: #999;
+}
+</style>
