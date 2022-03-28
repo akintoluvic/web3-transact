@@ -14,29 +14,22 @@ export default {
     const web3Available = ref(false);
     const router = useRouter();
     const { transactionDetails } = useTransaction();
+    const loadingTransaction = ref(false);
 
     const loadWeb3 = async () => {
       if (window.ethereum) {
         window.web3 = new Web3(window.ethereum);
-        console.log(window.web3);
         window.ethereum.enable();
         web3Available.value = true;
       } else {
         web3Available.value = false;
-        console.log("No web3? You should consider trying MetaMask!");
       }
     };
 
-    const load = async () => {
+    // Initiate web3 connection
+    const initiateWeb3 = async () => {
       await loadWeb3();
       window.contract = await loadContract();
-      updateStatus("Ready!");
-    };
-
-    const updateStatus = async (status) => {
-      // const statusEl = document.getElementById('status');
-      // statusEl.innerHTML = status;
-      console.log(status);
     };
 
     const loadContract = async () => {
@@ -46,15 +39,15 @@ export default {
       );
     };
 
-    // 0x78536177b32FCcaF12b98EEb33e8e815D4DD1712
-
     const makeTransfer = async () => {
-      console.log(transactionDetails.value);
+      loadingTransaction.value = true;
       const response = await window.contract.methods
         .transfer(destinationAddress.value, amount.value)
         .send({ from: window.ethereum.selectedAddress });
 
       const { transactionHash, status, to, gasUsed } = response;
+
+      // Set values to transactionDetails
       transactionDetails.value = {
         transactionHash,
         status,
@@ -62,14 +55,17 @@ export default {
         gasUsed,
       };
 
-      console.log(response, response.transactionHash);
-      if (response.status !== false) router.push("/transaction-details");
-      // setTransactionDetails(tx)
-      // updateStatus(`Transaction: ${tx.transactionHash}`);
+      if (response.status !== false) {
+        loadingTransaction.value = false;
+        router.push("/transaction-details");
+      } else {
+        loadingTransaction.value = false;
+        alert("Transaction failed");
+      }
     };
 
     onMounted(() => {
-      load();
+      initiateWeb3();
     });
     return {
       contractAddress,
@@ -77,6 +73,7 @@ export default {
       amount,
       makeTransfer,
       web3Available,
+      loadingTransaction,
     };
   },
 };
@@ -90,6 +87,7 @@ export default {
           : "Install metamask extension to conduct transaction"
       }}
     </h1>
+    <h3>Send 0 Ether, for successful tx</h3>
     <form>
       <label for="address">Address</label>
       <input type="text" name="address" v-model="destinationAddress" />
@@ -100,7 +98,7 @@ export default {
         @click.prevent="makeTransfer"
         :disabled="!web3Available || destinationAddress === '' || amount === ''"
       >
-        Submit
+        {{ loadingTransaction ? "Loading..." : "Submit" }}
       </button>
     </form>
   </main>
