@@ -1,6 +1,8 @@
 <script>
 import { onMounted, ref } from "vue";
 import Web3 from "web3";
+import { useRouter } from "vue-router";
+import { useTransaction } from "@/compossables/transaction.js";
 
 export default {
   setup() {
@@ -10,6 +12,8 @@ export default {
     const destinationAddress = ref("");
     const amount = ref("");
     const web3Available = ref(false);
+    const router = useRouter();
+    const { transactionDetails } = useTransaction();
 
     const loadWeb3 = async () => {
       if (window.ethereum) {
@@ -45,16 +49,22 @@ export default {
     // 0x78536177b32FCcaF12b98EEb33e8e815D4DD1712
 
     const makeTransfer = async () => {
-      const tx = await window.contract.methods
+      console.log(transactionDetails.value);
+      const response = await window.contract.methods
         .transfer(destinationAddress.value, amount.value)
         .send({ from: window.ethereum.selectedAddress });
 
-      // transactionHash
-      // status
-      // to
-      // gasUsed in GWEI
-      // GWEI = 0.000000000806 ETH
-      console.log(tx, tx.transactionHash);
+      const { transactionHash, status, to, gasUsed } = response;
+      transactionDetails.value = {
+        transactionHash,
+        status,
+        to,
+        gasUsed,
+      };
+
+      console.log(response, response.transactionHash);
+      if (response.status !== false) router.push("/transaction-details");
+      // setTransactionDetails(tx)
       // updateStatus(`Transaction: ${tx.transactionHash}`);
     };
 
@@ -96,46 +106,4 @@ export default {
   </main>
 </template>
 
-<style scoped>
-.transaction-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: rgb(39, 39, 39);
-  padding: 150px 100px;
-  border-radius: 25px;
-}
-form {
-  width: 100%;
-}
-form > * {
-  display: block;
-  margin: 0.5rem 0;
-  color: grey;
-}
-form > input {
-  width: 340px;
-  width: 100%;
-  padding: 0.7rem;
-  border: 1px solid grey;
-  border-radius: 5px;
-  background-color: beige;
-}
-form > button {
-  padding: 0.8rem;
-  border: 0px;
-  border-radius: 5px;
-  background-color: hsla(160, 100%, 37%, 1);
-  color: white;
-  width: 100%;
-  margin-top: 20px;
-}
-form > button:hover {
-  background-color: rgb(4, 160, 108);
-}
-form > button:disabled {
-  background-color: grey;
-  color: white;
-}
-</style>
+<style scoped></style>
