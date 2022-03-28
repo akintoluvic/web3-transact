@@ -117,4 +117,51 @@ nav a:first-of-type {
     margin-top: 1rem;
   }
 }
+.transaction-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(39, 39, 39);
+  padding: 150px 100px;
+  border-radius: 25px;
+}
+@media (max-width: 768px) {
+  .transaction-box {
+    padding: 50px 50px;
+    margin-top: 30px;
+  }
+}
+form {
+  width: 100%;
+}
+form > * {
+  display: block;
+  margin: 0.5rem 0;
+  color: grey;
+}
+form > input {
+  width: 340px;
+  width: 100%;
+  padding: 0.7rem;
+  border: 1px solid grey;
+  border-radius: 5px;
+  background-color: beige;
+}
+form > button {
+  padding: 0.8rem;
+  border: 0px;
+  border-radius: 5px;
+  background-color: hsla(160, 100%, 37%, 1);
+  color: white;
+  width: 100%;
+  margin-top: 20px;
+}
+form > button:hover {
+  background-color: rgb(4, 160, 108);
+}
+form > button:disabled {
+  background-color: grey;
+  color: white;
+}
 </style>
