@@ -6,21 +6,21 @@
       <br />
     </span>
     <span>
-      <textarea :value="transactionDetails.transactionHash" />
+      <textarea :value="transactionDetails?.transactionHash || ''" />
     </span>
     <span aria-label="Transaction Status">
       <strong class="green">Transaction Status:</strong>
-      {{ transactionDetails.status }}
+      {{ transactionDetails?.status }}
     </span>
     <span aria-label="Address sent to">
       <strong class="green">Address Sent:</strong>
     </span>
     <span>
-      <textarea :value="transactionDetails.to" />
+      <textarea :value="transactionDetails?.to" />
     </span>
     <span aria-label="Transaction Fee">
       <strong class="green">Transaction Fee:</strong>
-      {{ transactionDetails.gasUsed }} GWEI
+      {{ transactionDetails?.gasUsed }} GWEI
     </span>
     <RouterLink to="/">Return to Home</RouterLink>
   </div>
@@ -28,9 +28,19 @@
 
 <script>
 import { useTransaction } from "@/compossables/transaction.js";
+import { onMounted } from "vue";
+import { useRouter } from "vue-router";
 export default {
   setup() {
+    const router = useRouter();
     const { transactionDetails } = useTransaction();
+    onMounted(() => {
+      console.log(router, transactionDetails.value);
+      if (transactionDetails.value === null) {
+        router.push("/");
+        router.currentRoute.path = "/";
+      }
+    });
     return {
       transactionDetails,
     };
