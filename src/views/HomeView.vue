@@ -8,14 +8,17 @@ export default {
     const ABI = ref([{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"standard","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"},{"name":"","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"_initialSupply","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":true,"name":"_spender","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Approval","type":"event"}])
     const contractAddress = ref("0x86C12A724340f3F4F6142789808874d0A55Bd01f");
     const destinationAddress = ref("");
-    const amount = ref(0);
+    const amount = ref("");
+    const web3Available = ref(false);
 
     const loadWeb3 = async () => {
       if (window.ethereum) {
         window.web3 = new Web3(window.ethereum);
         console.log(window.web3);
         window.ethereum.enable();
+        web3Available.value = true;
       } else {
+        web3Available.value = false;
         console.log("No web3? You should consider trying MetaMask!");
       }
     };
@@ -63,19 +66,32 @@ export default {
       destinationAddress,
       amount,
       makeTransfer,
+      web3Available,
     };
   },
 };
 </script>
 <template>
   <main class="transaction-box">
-    <h1>Transfer Form</h1>
+    <h1>
+      {{
+        web3Available
+          ? "Transfer Form"
+          : "Install metamask extension to conduct transaction"
+      }}
+    </h1>
     <form>
       <label for="address">Address</label>
       <input type="text" name="address" v-model="destinationAddress" />
       <label for="amount">Amount</label>
       <input type="number" name="amount" v-model="amount" />
-      <button type="submit" @click.prevent="makeTransfer">Submit</button>
+      <button
+        type="submit"
+        @click.prevent="makeTransfer"
+        :disabled="!web3Available || destinationAddress === '' || amount === ''"
+      >
+        Submit
+      </button>
     </form>
   </main>
 </template>
@@ -117,5 +133,9 @@ form > button {
 }
 form > button:hover {
   background-color: rgb(4, 160, 108);
+}
+form > button:disabled {
+  background-color: grey;
+  color: white;
 }
 </style>
