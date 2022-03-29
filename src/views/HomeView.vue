@@ -15,6 +15,8 @@ export default {
     const router = useRouter();
     const { transactionDetails } = useTransaction();
     const loadingTransaction = ref(false);
+    const transactionError = ref(null);
+    const showTransactionError = ref(false);
 
     const loadWeb3 = async () => {
       if (window.ethereum) {
@@ -58,10 +60,17 @@ export default {
         loadingTransaction.value = false;
         router.push("/transaction-details");
       } catch (error) {
-        console.log(error);
+        transactionError.value = error;
         loadingTransaction.value = false;
-        alert(error);
+        showError();
       }
+    };
+
+    const showError = () => {
+      showTransactionError.value = true;
+      setTimeout(() => {
+        showTransactionError.value = false;
+      }, 2000);
     };
 
     onMounted(() => {
@@ -74,6 +83,8 @@ export default {
       makeTransfer,
       web3Available,
       loadingTransaction,
+      transactionError,
+      showTransactionError,
     };
   },
 };
@@ -96,6 +107,9 @@ export default {
       >
       <label for="amount">Amount</label>
       <input type="number" name="amount" v-model="amount" />
+      <span v-if="showTransactionError" class="address-info red"
+        >Invalid Address or amount</span
+      >
       <button
         type="submit"
         @click.prevent="makeTransfer"
@@ -111,5 +125,8 @@ export default {
 .address-info {
   font-size: 0.8rem;
   color: #999;
+}
+.red {
+  color: red;
 }
 </style>
