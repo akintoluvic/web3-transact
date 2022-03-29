@@ -41,26 +41,26 @@ export default {
 
     const makeTransfer = async () => {
       loadingTransaction.value = true;
-      const response = await window.contract.methods
-        .transfer(destinationAddress.value, amount.value)
-        .send({ from: window.ethereum.selectedAddress });
+      try {
+        const response = await window.contract.methods
+          .transfer(destinationAddress.value, amount.value)
+          .send({ from: window.ethereum.selectedAddress });
 
-      const { transactionHash, status, to, gasUsed } = response;
+        const { transactionHash, status, to, gasUsed } = response;
 
-      // Set values to transactionDetails
-      transactionDetails.value = {
-        transactionHash,
-        status,
-        to,
-        gasUsed,
-      };
-
-      if (response.status !== false) {
+        // Set values to transactionDetails
+        transactionDetails.value = {
+          transactionHash,
+          status,
+          to,
+          gasUsed,
+        };
         loadingTransaction.value = false;
         router.push("/transaction-details");
-      } else {
+      } catch (error) {
+        console.log(error);
         loadingTransaction.value = false;
-        alert("Transaction failed");
+        alert(error);
       }
     };
 
